@@ -1,4 +1,5 @@
 import { CATEGORY_COLORS } from "@/types";
+import qrcodeImage from "@/assets/images/qrcode.jpg";
 
 interface SidebarProps {
   categories: Map<string, number>;
@@ -123,21 +124,19 @@ export function Sidebar({
         </ul>
       </div>
 
-      {/* Subscribe */}
+      {/* Follow WeChat Official Account */}
       <div className="rounded-xl border border-brand-200 bg-gradient-to-br from-brand-50 to-white p-5 dark:border-brand-900/30 dark:from-brand-950/30 dark:to-surface-900">
-        <h4 className="mb-2 text-sm font-semibold text-surface-900 dark:text-surface-0">📬 订阅更新</h4>
+        <h4 className="mb-2 text-sm font-semibold text-surface-900 dark:text-surface-0">📱订关注公众号/h4>
         <p className="mb-3 text-xs leading-relaxed text-surface-500 dark:text-surface-400">
-          获取最新嵌入式技术文章推送
+          微信扫码关注「坏柠编程」，第一时间获取嵌入式实战文章与更新。
         </p>
-        <div className="flex gap-2">
-          <input
-            type="email"
-            placeholder="输入邮箱地址"
-            className="flex-1 rounded-lg border border-surface-200 bg-white px-3 py-2 text-xs outline-none transition-colors placeholder:text-surface-400 focus:border-brand-400 dark:border-surface-700 dark:bg-surface-800 dark:placeholder:text-surface-500"
+        <div className="rounded-xl border border-brand-100 bg-white p-3 dark:border-brand-900/30 dark:bg-surface-900">
+          <img
+            src={qrcodeImage}
+            alt="坏柠编程公众号二维码"
+            className="mx-auto aspect-square w-full max-w-[220px] rounded-lg border border-surface-200 object-cover dark:border-surface-700"
           />
-          <button className="shrink-0 rounded-lg bg-surface-900 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-surface-800 dark:bg-surface-0 dark:text-surface-900 dark:hover:bg-surface-200">
-            订阅
-          </button>
+          <p className="mt-3 text-center text-xs font-medium text-surface-700 dark:text-surface-200">公众号：坏柠编程</p>
         </div>
       </div>
     </div>

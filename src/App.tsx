@@ -12,7 +12,32 @@ import type { Page } from "@/types";
 // Load all markdown posts at build time (via Vite's import.meta.glob)
 const allPosts = loadAllPosts();
 
+interface AppRoute {
+  page: Page;
+  articleId: string;
+}
+
+function parseHashRoute(hash: string): AppRoute {
+  const match = hash.match(/^#\/article\/([^/?#]+)/);
+  if (!match) return { page: "home", articleId: "" };
+
+  try {
+    return { page: "article", articleId: decodeURIComponent(match[1]) };
+  } catch {
+    return { page: "home", articleId: "" };
+  }
+}
+
+function toHash(route: AppRoute): string {
+  if (route.page === "article" && route.articleId) {
+    return `#/article/${encodeURIComponent(route.articleId)}`;
+  }
+  return "#/";
+}
+
 export function App() {
+  const initialRoute = parseHashRoute(typeof window === "undefined" ? "" : window.location.hash);
+
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window === "undefined") return false;
     const savedTheme = window.localStorage.getItem("theme");
@@ -21,8 +46,8 @@ export function App() {
     return false;
   });
 
-  const [currentPage, setCurrentPage] = useState<Page>("home");
-  const [currentArticleId, setCurrentArticleId] = useState("");
+  const [currentPage, setCurrentPage] = useState<Page>(initialRoute.page);
+  const [currentArticleId, setCurrentArticleId] = useState(initialRoute.articleId);
   const [searchOpen, setSearchOpen] = useState(false);
 
   const { query, setQuery, results, reset } = useSearch(allPosts);
@@ -35,11 +60,36 @@ export function App() {
 
   const toggleDark = useCallback(() => setDarkMode((prev) => !prev), []);
 
-  const navigate = useCallback((page: Page, articleId?: string) => {
-    setCurrentPage(page);
-    if (articleId) setCurrentArticleId(articleId);
+  const applyRoute = useCallback((route: AppRoute) => {
+    setCurrentPage(route.page);
+    setCurrentArticleId(route.articleId);
     window.scrollTo({ top: 0 });
   }, []);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      applyRoute(parseHashRoute(window.location.hash));
+    };
+
+    handleHashChange();
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, [applyRoute]);
+
+  const navigate = useCallback((page: Page, articleId?: string) => {
+    const nextRoute: AppRoute =
+      page === "article" && articleId
+        ? { page: "article", articleId }
+        : { page: "home", articleId: "" };
+
+    const nextHash = toHash(nextRoute);
+    if (window.location.hash !== nextHash) {
+      window.location.hash = nextHash;
+      return;
+    }
+
+    applyRoute(nextRoute);
+  }, [applyRoute]);
 
   const handleSearchOpen = useCallback(() => setSearchOpen(true), []);
 
