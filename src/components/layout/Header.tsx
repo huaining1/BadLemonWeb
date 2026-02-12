@@ -9,7 +9,13 @@ interface HeaderProps {
   onSearchOpen: () => void;
 }
 
-export function Header({ darkMode, onToggleDark, onNavigate, currentPage, onSearchOpen }: HeaderProps) {
+export function Header({
+  darkMode,
+  onToggleDark,
+  onNavigate,
+  currentPage,
+  onSearchOpen,
+}: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -23,12 +29,10 @@ export function Header({ darkMode, onToggleDark, onNavigate, currentPage, onSear
     return () => window.removeEventListener("keydown", handler);
   }, [onSearchOpen]);
 
-  const navLinks = [
-    { label: "首页", page: "home" as const },
-    { label: "MCU 开发", page: "home" as const },
-    { label: "RTOS", page: "home" as const },
-    { label: "Linux 驱动", page: "home" as const },
-    { label: "关于", page: "home" as const },
+  const navLinks: Array<{ label: string; page: Page; activePages: Page[] }> = [
+    { label: "首页", page: "home", activePages: ["home"] },
+    { label: "文章", page: "articles", activePages: ["articles", "article"] },
+    { label: "关于", page: "about", activePages: ["about"] },
   ];
 
   return (
@@ -55,12 +59,12 @@ export function Header({ darkMode, onToggleDark, onNavigate, currentPage, onSear
 
           {/* Desktop Nav */}
           <nav className="hidden items-center gap-1 md:flex">
-            {navLinks.map((link, i) => (
+            {navLinks.map((link) => (
               <button
-                key={i}
+                key={link.page}
                 onClick={() => onNavigate(link.page)}
-                className={`rounded-lg px-3.5 py-2 text-sm font-medium transition-colors ${
-                  i === 0 && currentPage === "home"
+                className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  link.activePages.includes(currentPage)
                     ? "bg-surface-100 text-surface-900 dark:bg-surface-800 dark:text-surface-0"
                     : "text-surface-500 hover:bg-surface-50 hover:text-surface-900 dark:text-surface-300 dark:hover:bg-surface-800 dark:hover:text-surface-0"
                 }`}
@@ -136,10 +140,13 @@ export function Header({ darkMode, onToggleDark, onNavigate, currentPage, onSear
 
         {mobileMenuOpen && (
           <div className="border-t border-surface-100 py-3 dark:border-surface-800 md:hidden">
-            {navLinks.map((link, i) => (
+            {navLinks.map((link) => (
               <button
-                key={i}
-                onClick={() => { onNavigate(link.page); setMobileMenuOpen(false); }}
+                key={link.page}
+                onClick={() => {
+                  onNavigate(link.page);
+                  setMobileMenuOpen(false);
+                }}
                 className="block w-full px-3 py-2.5 text-left text-sm font-medium text-surface-600 hover:text-surface-900 dark:text-surface-300 dark:hover:text-surface-0"
               >
                 {link.label}

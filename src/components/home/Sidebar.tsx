@@ -126,7 +126,7 @@ export function Sidebar({
 
       {/* Follow WeChat Official Account */}
       <div className="rounded-xl border border-brand-200 bg-gradient-to-br from-brand-50 to-white p-5 dark:border-brand-900/30 dark:from-brand-950/30 dark:to-surface-900">
-        <h4 className="mb-2 text-sm font-semibold text-surface-900 dark:text-surface-0">📱订关注公众号/h4>
+        <h4 className="mb-2 text-sm font-semibold text-surface-900 dark:text-surface-0">📱订阅公众号</h4>
         <p className="mb-3 text-xs leading-relaxed text-surface-500 dark:text-surface-400">
           微信扫码关注「坏柠编程」，第一时间获取嵌入式实战文章与更新。
         </p>

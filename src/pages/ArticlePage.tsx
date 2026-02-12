@@ -2,6 +2,7 @@ import { useMemo, useEffect, useState } from "react";
 import type { Post, Page, TocItem } from "@/types";
 import { processHeadings } from "@/utils/markdown";
 import { CATEGORY_COLORS } from "@/types";
+import qrcodeImage from "@/assets/images/qrcode.jpg";
 
 interface ArticlePageProps {
   posts: Post[];
@@ -18,6 +19,8 @@ export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) 
   }, [post]);
 
   const [activeHeadingId, setActiveHeadingId] = useState("");
+  const [commentPromptOpen, setCommentPromptOpen] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   // Scroll spy: highlight current heading by scroll position
   useEffect(() => {
@@ -77,7 +80,30 @@ export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) 
   // Scroll to top on article change
   useEffect(() => {
     window.scrollTo({ top: 0 });
+    setCommentPromptOpen(false);
+    setShowBackToTop(false);
   }, [articleId]);
+
+  useEffect(() => {
+    const toggleBackToTop = () => {
+      setShowBackToTop(window.scrollY > 320);
+    };
+
+    toggleBackToTop();
+    window.addEventListener("scroll", toggleBackToTop, { passive: true });
+    return () => window.removeEventListener("scroll", toggleBackToTop);
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setCommentPromptOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   if (!post) {
     return (
@@ -182,6 +208,22 @@ export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) 
                 className="article-content"
                 dangerouslySetInnerHTML={{ __html: html }}
               />
+            </div>
+
+            {/* Comment CTA */}
+            <div className="mt-6 rounded-xl border border-brand-200 bg-gradient-to-br from-brand-50 to-white p-5 dark:border-brand-900/30 dark:from-brand-950/30 dark:to-surface-900">
+              <h3 className="text-base font-semibold text-surface-900 dark:text-surface-0">
+                看完文章了？欢迎留言交流
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-surface-600 dark:text-surface-300">
+                点击下方按钮，扫码关注公众号「坏柠编程」，前往公众号留言区反馈你的问题或观点。
+              </p>
+              <button
+                onClick={() => setCommentPromptOpen(true)}
+                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-surface-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-surface-800 dark:bg-surface-0 dark:text-surface-900 dark:hover:bg-surface-200"
+              >
+                💬 评论本文
+              </button>
             </div>
 
             {/* Author box */}
@@ -294,6 +336,63 @@ export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) 
           </aside>
         </div>
       </div>
+
+      {commentPromptOpen && (
+        <div
+          className="fixed inset-0 z-[110] flex items-center justify-center px-4"
+          onClick={() => setCommentPromptOpen(false)}
+        >
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div
+            className="relative z-10 w-full max-w-sm rounded-2xl border border-surface-200 bg-white p-6 shadow-2xl dark:border-surface-700 dark:bg-surface-900"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h4 className="text-base font-semibold text-surface-900 dark:text-surface-0">
+              扫码关注后留言
+            </h4>
+            <p className="mt-2 text-sm leading-relaxed text-surface-500 dark:text-surface-400">
+              使用微信扫码关注公众号「坏柠编程」，进入公众号即可进行留言互动。
+            </p>
+            <img
+              src={qrcodeImage}
+              alt="坏柠编程公众号二维码"
+              className="mx-auto mt-4 aspect-square w-full max-w-[220px] rounded-lg border border-surface-200 object-cover dark:border-surface-700"
+            />
+            <p className="mt-4 text-xs text-surface-500 dark:text-surface-400">
+              公众号名称：坏柠编程
+            </p>
+            <div className="mt-5 flex gap-2">
+              <button
+                onClick={() => setCommentPromptOpen(false)}
+                className="flex-1 rounded-lg border border-surface-200 px-3 py-2 text-sm text-surface-600 transition-colors hover:bg-surface-100 dark:border-surface-700 dark:text-surface-300 dark:hover:bg-surface-800"
+              >
+                我知道了
+              </button>
+              <button
+                onClick={() => setCommentPromptOpen(false)}
+                className="flex-1 rounded-lg bg-brand-400 px-3 py-2 text-sm font-medium text-surface-900 transition-colors hover:bg-brand-300"
+              >
+                去公众号留言
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className={`fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-50 flex h-10 w-10 items-center justify-center rounded-full bg-surface-900 text-surface-0 shadow-lg transition-all duration-200 sm:h-11 sm:w-11 ${
+          showBackToTop
+            ? "translate-y-0 opacity-100 hover:-translate-y-0.5 hover:bg-surface-800 dark:hover:bg-surface-200"
+            : "pointer-events-none translate-y-3 opacity-0"
+        } dark:bg-surface-100 dark:text-surface-900`}
+        aria-label="回到顶部"
+        title="回到顶部"
+      >
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
+        </svg>
+      </button>
     </div>
   );
 }

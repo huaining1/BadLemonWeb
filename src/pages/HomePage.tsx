@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import type { Post, Page } from "@/types";
+import { ALL_CATEGORY, type Post, type Page } from "@/types";
 import { ArticleCard } from "@/components/home/ArticleCard";
 import { Sidebar } from "@/components/home/Sidebar";
 
@@ -9,7 +9,7 @@ interface HomePageProps {
 }
 
 export function HomePage({ posts, onNavigate }: HomePageProps) {
-  const [activeCategory, setActiveCategory] = useState("全部");
+  const [activeCategory, setActiveCategory] = useState(ALL_CATEGORY);
   const [activeTag, setActiveTag] = useState<string | null>(null);
 
   // Compute categories and their counts
@@ -29,7 +29,7 @@ export function HomePage({ posts, onNavigate }: HomePageProps) {
   // Filter posts by category + tag
   const filteredPosts = useMemo(() => {
     let result = posts;
-    if (activeCategory !== "全部") {
+    if (activeCategory !== ALL_CATEGORY) {
       result = result.filter((p) => p.meta.category === activeCategory);
     }
     if (activeTag) {
@@ -41,7 +41,7 @@ export function HomePage({ posts, onNavigate }: HomePageProps) {
   const featuredPosts = useMemo(() => filteredPosts.filter((p) => p.meta.featured), [filteredPosts]);
   const regularPosts = useMemo(() => filteredPosts.filter((p) => !p.meta.featured), [filteredPosts]);
 
-  const categoryTabs = ["全部", ...Array.from(categories.keys())];
+  const categoryTabs = [ALL_CATEGORY, ...Array.from(categories.keys())];
 
   const handleCategoryClick = (cat: string) => {
     setActiveCategory(cat);
@@ -73,7 +73,7 @@ export function HomePage({ posts, onNavigate }: HomePageProps) {
                     }`}
                   >
                     {cat}
-                    {cat !== "全部" && (
+                    {cat !== ALL_CATEGORY && (
                       <span className={`text-xs ${isActive ? "text-surface-300 dark:text-surface-500" : "text-surface-400 dark:text-surface-500"}`}>
                         {categories.get(cat)}
                       </span>

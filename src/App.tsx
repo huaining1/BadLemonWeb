@@ -4,6 +4,7 @@ import { Hero } from "@/components/layout/Hero";
 import { Footer } from "@/components/layout/Footer";
 import { HomePage } from "@/pages/HomePage";
 import { ArticlePage } from "@/pages/ArticlePage";
+import { AboutPage } from "@/pages/AboutPage";
 import { SearchModal } from "@/components/search/SearchModal";
 import { useSearch } from "@/hooks/useSearch";
 import { loadAllPosts } from "@/utils/markdown";
@@ -18,6 +19,9 @@ interface AppRoute {
 }
 
 function parseHashRoute(hash: string): AppRoute {
+  if (hash === "#/about") return { page: "about", articleId: "" };
+  if (hash === "#/articles") return { page: "articles", articleId: "" };
+
   const match = hash.match(/^#\/article\/([^/?#]+)/);
   if (!match) return { page: "home", articleId: "" };
 
@@ -32,6 +36,8 @@ function toHash(route: AppRoute): string {
   if (route.page === "article" && route.articleId) {
     return `#/article/${encodeURIComponent(route.articleId)}`;
   }
+  if (route.page === "about") return "#/about";
+  if (route.page === "articles") return "#/articles";
   return "#/";
 }
 
@@ -77,10 +83,16 @@ export function App() {
   }, [applyRoute]);
 
   const navigate = useCallback((page: Page, articleId?: string) => {
-    const nextRoute: AppRoute =
-      page === "article" && articleId
-        ? { page: "article", articleId }
-        : { page: "home", articleId: "" };
+    let nextRoute: AppRoute;
+    if (page === "article" && articleId) {
+      nextRoute = { page: "article", articleId };
+    } else if (page === "about") {
+      nextRoute = { page: "about", articleId: "" };
+    } else if (page === "articles") {
+      nextRoute = { page: "articles", articleId: "" };
+    } else {
+      nextRoute = { page: "home", articleId: "" };
+    }
 
     const nextHash = toHash(nextRoute);
     if (window.location.hash !== nextHash) {
@@ -124,12 +136,20 @@ export function App() {
         </>
       )}
 
+      {currentPage === "articles" && (
+        <HomePage posts={allPosts} onNavigate={navigate} />
+      )}
+
       {currentPage === "article" && (
         <ArticlePage
           posts={allPosts}
           articleId={currentArticleId}
           onNavigate={navigate}
         />
+      )}
+
+      {currentPage === "about" && (
+        <AboutPage onNavigate={navigate} />
       )}
 
       <Footer />
