@@ -1,0 +1,145 @@
+import { CATEGORY_COLORS } from "@/types";
+
+interface SidebarProps {
+  categories: Map<string, number>;
+  tags: Map<string, number>;
+  activeCategory: string;
+  activeTag: string | null;
+  onCategoryClick: (cat: string) => void;
+  onTagClick: (tag: string) => void;
+}
+
+export function Sidebar({
+  categories,
+  tags,
+  activeCategory,
+  activeTag,
+  onCategoryClick,
+  onTagClick,
+}: SidebarProps) {
+  const tools = [
+    { icon: "⚙️", name: "STM32CubeMX" },
+    { icon: "🔨", name: "Keil MDK / IAR" },
+    { icon: "💻", name: "VS Code + Cortex-Debug" },
+    { icon: "🔌", name: "J-Link / ST-Link" },
+    { icon: "📊", name: "逻辑分析仪" },
+  ];
+
+  return (
+    <div className="sticky top-20 space-y-5">
+      {/* Author card */}
+      <div className="rounded-xl border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+        <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-xl bg-surface-900 text-2xl shadow-md dark:bg-surface-800">
+          🍋
+        </div>
+        <h3 className="text-base font-bold text-surface-900 dark:text-surface-0">坏柠</h3>
+        <p className="mb-3 text-sm text-surface-500 dark:text-surface-400">嵌入式软件工程师</p>
+        <div className="flex flex-wrap gap-1.5">
+          {["⚙️ STM32", "🔧 FreeRTOS", "🐧 Linux", "🔌 RISC-V"].map((skill) => (
+            <span
+              key={skill}
+              className="rounded-md bg-surface-100 px-2 py-0.5 text-[11px] font-medium text-surface-600 dark:bg-surface-800 dark:text-surface-300"
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Categories */}
+      <div className="rounded-xl border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+        <h4 className="mb-3 flex items-center gap-2 text-sm font-semibold text-surface-900 dark:text-surface-0">
+          <span>📂</span> 文章分类
+        </h4>
+        <div className="space-y-1">
+          {Array.from(categories.entries()).map(([cat, count]) => {
+            const isActive = activeCategory === cat;
+            const colorClass = CATEGORY_COLORS[cat] || "";
+            return (
+              <button
+                key={cat}
+                onClick={() => onCategoryClick(cat)}
+                className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                  isActive
+                    ? "bg-brand-50 font-medium text-brand-700 dark:bg-brand-900/20 dark:text-brand-400"
+                    : "text-surface-600 hover:bg-surface-50 dark:text-surface-300 dark:hover:bg-surface-800"
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  {colorClass && (
+                    <span className={`inline-block h-2 w-2 rounded-full ${isActive ? "bg-brand-500" : "bg-surface-300 dark:bg-surface-600"}`} />
+                  )}
+                  {cat}
+                </span>
+                <span className={`text-xs ${isActive ? "text-brand-600 dark:text-brand-400" : "text-surface-400 dark:text-surface-500"}`}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Tags */}
+      <div className="rounded-xl border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+        <h4 className="mb-3 flex items-center gap-2 text-sm font-semibold text-surface-900 dark:text-surface-0">
+          <span>🏷️</span> 热门标签
+        </h4>
+        <div className="flex flex-wrap gap-1.5">
+          {Array.from(tags.entries())
+            .sort((a, b) => b[1] - a[1])
+            .map(([tag, count]) => {
+              const isActive = activeTag === tag;
+              return (
+                <button
+                  key={tag}
+                  onClick={() => onTagClick(tag)}
+                  className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                    isActive
+                      ? "bg-brand-400 text-surface-900 shadow-sm"
+                      : "bg-surface-100 text-surface-600 hover:bg-brand-50 hover:text-brand-700 dark:bg-surface-800 dark:text-surface-300 dark:hover:bg-brand-900/20 dark:hover:text-brand-400"
+                  }`}
+                >
+                  {tag}
+                  <span className="ml-0.5 opacity-50">({count})</span>
+                </button>
+              );
+            })}
+        </div>
+      </div>
+
+      {/* Tools */}
+      <div className="rounded-xl border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+        <h4 className="mb-3 flex items-center gap-2 text-sm font-semibold text-surface-900 dark:text-surface-0">
+          <span>🛠</span> 常用工具
+        </h4>
+        <ul className="space-y-2">
+          {tools.map((tool) => (
+            <li key={tool.name} className="flex items-center gap-2.5 text-sm text-surface-600 dark:text-surface-300">
+              <span className="text-base">{tool.icon}</span>
+              {tool.name}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Subscribe */}
+      <div className="rounded-xl border border-brand-200 bg-gradient-to-br from-brand-50 to-white p-5 dark:border-brand-900/30 dark:from-brand-950/30 dark:to-surface-900">
+        <h4 className="mb-2 text-sm font-semibold text-surface-900 dark:text-surface-0">📬 订阅更新</h4>
+        <p className="mb-3 text-xs leading-relaxed text-surface-500 dark:text-surface-400">
+          获取最新嵌入式技术文章推送
+        </p>
+        <div className="flex gap-2">
+          <input
+            type="email"
+            placeholder="输入邮箱地址"
+            className="flex-1 rounded-lg border border-surface-200 bg-white px-3 py-2 text-xs outline-none transition-colors placeholder:text-surface-400 focus:border-brand-400 dark:border-surface-700 dark:bg-surface-800 dark:placeholder:text-surface-500"
+          />
+          <button className="shrink-0 rounded-lg bg-surface-900 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-surface-800 dark:bg-surface-0 dark:text-surface-900 dark:hover:bg-surface-200">
+            订阅
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
