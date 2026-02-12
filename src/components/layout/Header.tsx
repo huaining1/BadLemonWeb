@@ -31,7 +31,7 @@ export function Header({
 
   const navLinks: Array<{ label: string; page: Page; activePages: Page[] }> = [
     { label: "首页", page: "home", activePages: ["home"] },
-    { label: "文章", page: "articles", activePages: ["articles", "article"] },
+    { label: "文章", page: "articles", activePages: ["articles", "article", "tags", "tag"] },
     { label: "关于", page: "about", activePages: ["about"] },
   ];
 

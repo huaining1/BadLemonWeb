@@ -21,7 +21,7 @@ export interface TocItem {
   level: number;
 }
 
-export type Page = "home" | "articles" | "article" | "about";
+export type Page = "home" | "articles" | "article" | "about" | "tags" | "tag";
 export const ALL_CATEGORY = "全部";
 
 export const CATEGORY_COLORS: Record<string, string> = {

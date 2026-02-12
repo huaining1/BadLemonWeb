@@ -27,6 +27,8 @@ export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) 
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [codeCopyToastVisible, setCodeCopyToastVisible] = useState(false);
+  const codeCopyToastTimerRef = useRef<number | null>(null);
 
   // Scroll spy: highlight current heading by scroll position
   useEffect(() => {
@@ -174,8 +176,105 @@ export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) 
       if (copyToastTimerRef.current) {
         window.clearTimeout(copyToastTimerRef.current);
       }
+      if (codeCopyToastTimerRef.current) {
+        window.clearTimeout(codeCopyToastTimerRef.current);
+      }
     };
   }, []);
+
+  useEffect(() => {
+    const articleElement = articleRef.current;
+    if (!articleElement) return;
+    const contentElement = articleElement.querySelector(".article-content");
+    if (!contentElement) return;
+
+    const disposers: Array<() => void> = [];
+    const timers = new Map<HTMLButtonElement, number>();
+
+    const preBlocks = Array.from(contentElement.querySelectorAll("pre"));
+    preBlocks.forEach((pre) => {
+      const code = pre.querySelector("code");
+      if (!code) return;
+
+      pre.style.position = "relative";
+
+      const existingButton = pre.querySelector<HTMLButtonElement>(".code-copy-btn");
+      if (existingButton) {
+        existingButton.remove();
+      }
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "code-copy-btn";
+      button.textContent = "复制";
+      button.setAttribute("aria-label", "复制代码");
+      button.style.position = "absolute";
+      button.style.top = "12px";
+      button.style.right = "12px";
+      button.style.zIndex = "3";
+      button.style.display = "inline-flex";
+      button.style.alignItems = "center";
+      button.style.justifyContent = "center";
+      button.style.minHeight = "28px";
+      button.style.padding = "6px 10px";
+      button.style.borderRadius = "6px";
+      button.style.border = "1px solid rgba(148, 163, 184, 0.45)";
+      button.style.background = "rgba(15, 23, 42, 0.7)";
+      button.style.color = "#f8fafc";
+      button.style.fontSize = "12px";
+      button.style.lineHeight = "1";
+      button.style.cursor = "pointer";
+      button.style.backdropFilter = "blur(2px)";
+
+      const copyCode = async () => {
+        const text = code.textContent ?? "";
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.style.position = "fixed";
+          textarea.style.opacity = "0";
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand("copy");
+          document.body.removeChild(textarea);
+        }
+
+        button.textContent = "已复制";
+        if (timers.has(button)) {
+          window.clearTimeout(timers.get(button));
+        }
+        const timerId = window.setTimeout(() => {
+          button.textContent = "复制";
+          timers.delete(button);
+        }, 1600);
+        timers.set(button, timerId);
+
+        setCodeCopyToastVisible(true);
+        if (codeCopyToastTimerRef.current) {
+          window.clearTimeout(codeCopyToastTimerRef.current);
+        }
+        codeCopyToastTimerRef.current = window.setTimeout(() => {
+          setCodeCopyToastVisible(false);
+          codeCopyToastTimerRef.current = null;
+        }, 1500);
+      };
+
+      button.addEventListener("click", copyCode);
+      pre.appendChild(button);
+
+      disposers.push(() => {
+        button.removeEventListener("click", copyCode);
+        button.remove();
+      });
+    });
+
+    return () => {
+      timers.forEach((id) => window.clearTimeout(id));
+      disposers.forEach((dispose) => dispose());
+    };
+  }, [articleId, html]);
 
   const handleCopyLink = async () => {
     const url = window.location.href;
@@ -290,12 +389,13 @@ export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) 
           {/* Tags */}
           <div className="mt-4 flex flex-wrap gap-2">
             {post.meta.tags.map((tag) => (
-              <span
+              <button
                 key={tag}
+                onClick={() => onNavigate("tag", tag)}
                 className="rounded-md bg-surface-100 px-2 py-0.5 text-xs font-medium text-surface-500 dark:bg-surface-800 dark:text-surface-400"
               >
                 # {tag}
-              </span>
+              </button>
             ))}
           </div>
 
@@ -493,6 +593,14 @@ export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) 
           </div>
         </div>
       )}
+
+      <div
+        className={`fixed bottom-20 left-1/2 z-[120] -translate-x-1/2 rounded-full bg-surface-900 px-3 py-1 text-xs text-white transition-all duration-200 ${
+          codeCopyToastVisible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"
+        } dark:bg-surface-100 dark:text-surface-900`}
+      >
+        代码已复制
+      </div>
 
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}

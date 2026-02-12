@@ -5,6 +5,8 @@ import { Footer } from "@/components/layout/Footer";
 import { HomePage } from "@/pages/HomePage";
 import { ArticlePage } from "@/pages/ArticlePage";
 import { AboutPage } from "@/pages/AboutPage";
+import { TagsPage } from "@/pages/TagsPage";
+import { TagDetailPage } from "@/pages/TagDetailPage";
 import { SearchModal } from "@/components/search/SearchModal";
 import { useSearch } from "@/hooks/useSearch";
 import { loadAllPosts } from "@/utils/markdown";
@@ -16,19 +18,34 @@ const allPosts = loadAllPosts();
 interface AppRoute {
   page: Page;
   articleId: string;
+  tagName: string;
 }
 
 function parseHashRoute(hash: string): AppRoute {
-  if (hash === "#/about") return { page: "about", articleId: "" };
-  if (hash === "#/articles") return { page: "articles", articleId: "" };
+  if (hash === "#/about") return { page: "about", articleId: "", tagName: "" };
+  if (hash === "#/articles") return { page: "articles", articleId: "", tagName: "" };
+  if (hash === "#/tags") return { page: "tags", articleId: "", tagName: "" };
+
+  const tagMatch = hash.match(/^#\/tag\/([^/?#]+)/);
+  if (tagMatch) {
+    try {
+      return {
+        page: "tag",
+        articleId: "",
+        tagName: decodeURIComponent(tagMatch[1]),
+      };
+    } catch {
+      return { page: "tags", articleId: "", tagName: "" };
+    }
+  }
 
   const match = hash.match(/^#\/article\/([^/?#]+)/);
-  if (!match) return { page: "home", articleId: "" };
+  if (!match) return { page: "home", articleId: "", tagName: "" };
 
   try {
-    return { page: "article", articleId: decodeURIComponent(match[1]) };
+    return { page: "article", articleId: decodeURIComponent(match[1]), tagName: "" };
   } catch {
-    return { page: "home", articleId: "" };
+    return { page: "home", articleId: "", tagName: "" };
   }
 }
 
@@ -36,8 +53,12 @@ function toHash(route: AppRoute): string {
   if (route.page === "article" && route.articleId) {
     return `#/article/${encodeURIComponent(route.articleId)}`;
   }
+  if (route.page === "tag" && route.tagName) {
+    return `#/tag/${encodeURIComponent(route.tagName)}`;
+  }
   if (route.page === "about") return "#/about";
   if (route.page === "articles") return "#/articles";
+  if (route.page === "tags") return "#/tags";
   return "#/";
 }
 
@@ -54,6 +75,7 @@ export function App() {
 
   const [currentPage, setCurrentPage] = useState<Page>(initialRoute.page);
   const [currentArticleId, setCurrentArticleId] = useState(initialRoute.articleId);
+  const [currentTagName, setCurrentTagName] = useState(initialRoute.tagName);
   const [searchOpen, setSearchOpen] = useState(false);
   const currentArticle = useMemo(
     () => allPosts.find((post) => post.meta.id === currentArticleId),
@@ -73,6 +95,7 @@ export function App() {
   const applyRoute = useCallback((route: AppRoute) => {
     setCurrentPage(route.page);
     setCurrentArticleId(route.articleId);
+    setCurrentTagName(route.tagName);
     window.scrollTo({ top: 0 });
   }, []);
 
@@ -98,23 +121,35 @@ export function App() {
       document.title = `文章列表 | ${siteName}`;
       return;
     }
+    if (currentPage === "tags") {
+      document.title = `标签索引 | ${siteName}`;
+      return;
+    }
+    if (currentPage === "tag") {
+      document.title = currentTagName ? `标签：${currentTagName} | ${siteName}` : `标签详情 | ${siteName}`;
+      return;
+    }
     if (currentPage === "about") {
       document.title = `关于我 | ${siteName}`;
       return;
     }
     document.title = `首页 | ${siteName}`;
-  }, [currentPage, currentArticle]);
+  }, [currentPage, currentArticle, currentTagName]);
 
-  const navigate = useCallback((page: Page, articleId?: string) => {
+  const navigate = useCallback((page: Page, value?: string) => {
     let nextRoute: AppRoute;
-    if (page === "article" && articleId) {
-      nextRoute = { page: "article", articleId };
+    if (page === "article" && value) {
+      nextRoute = { page: "article", articleId: value, tagName: "" };
+    } else if (page === "tag" && value) {
+      nextRoute = { page: "tag", articleId: "", tagName: value };
     } else if (page === "about") {
-      nextRoute = { page: "about", articleId: "" };
+      nextRoute = { page: "about", articleId: "", tagName: "" };
     } else if (page === "articles") {
-      nextRoute = { page: "articles", articleId: "" };
+      nextRoute = { page: "articles", articleId: "", tagName: "" };
+    } else if (page === "tags") {
+      nextRoute = { page: "tags", articleId: "", tagName: "" };
     } else {
-      nextRoute = { page: "home", articleId: "" };
+      nextRoute = { page: "home", articleId: "", tagName: "" };
     }
 
     const nextHash = toHash(nextRoute);
@@ -161,6 +196,14 @@ export function App() {
 
       {currentPage === "articles" && (
         <HomePage posts={allPosts} onNavigate={navigate} />
+      )}
+
+      {currentPage === "tags" && (
+        <TagsPage posts={allPosts} onNavigate={navigate} />
+      )}
+
+      {currentPage === "tag" && (
+        <TagDetailPage posts={allPosts} tagName={currentTagName} onNavigate={navigate} />
       )}
 
       {currentPage === "article" && (

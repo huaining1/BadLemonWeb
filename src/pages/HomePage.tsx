@@ -118,6 +118,18 @@ export function HomePage({ posts, onNavigate }: HomePageProps) {
               })}
             </div>
 
+            <div className="mb-6 flex items-center justify-end">
+              <button
+                onClick={() => onNavigate("tags")}
+                className="inline-flex items-center gap-1 rounded-lg border border-surface-200 px-3 py-1.5 text-xs font-medium text-surface-600 transition-colors hover:bg-surface-100 dark:border-surface-700 dark:text-surface-300 dark:hover:bg-surface-800"
+              >
+                按标签浏览
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m9 5 7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+
             {recentPosts.length > 0 && (
               <div className="mb-8 rounded-xl border border-surface-200 bg-white p-4 dark:border-surface-800 dark:bg-surface-900">
                 <h2 className="mb-3 text-sm font-semibold text-surface-900 dark:text-surface-0">

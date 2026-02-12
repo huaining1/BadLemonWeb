@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>坏柠编程</title>
+  <link>https://example.com</link>
+  <description>嵌入式技术分享博客，持续更新底层实战内容。</description>
+  <language>zh-CN</language>
+  <atom:link href="https://example.com/rss.xml" rel="self" type="application/rss+xml" />
+<item>
+  <title>作为一个刚入门的时候，我是如何入门 ESP32-S3 的</title>
+  <link>https://example.com/#/article/01_esp32s3</link>
+  <guid>https://example.com/#/article/01_esp32s3</guid>
+  <pubDate>Mon, 26 Jan 2026 00:00:00 GMT</pubDate>
+  <description>作为一个刚入门的时候，我是如何入门 ESP32-S3 的</description>
+</item>
+<item>
+  <title>STM32 开发：HAL 库、LL 库与寄存器操作的深度对比</title>
+  <link>https://example.com/#/article/stm32-hal-ll-register</link>
+  <guid>https://example.com/#/article/stm32-hal-ll-register</guid>
+  <pubDate>Fri, 10 Jan 2025 00:00:00 GMT</pubDate>
+  <description>从编译产物大小、执行效率、代码可维护性三个维度，对比 STM32 三种主流开发方式的实际差异，用基准测试数据帮你做出正确选型。</description>
+</item>
+<item>
+  <title>FreeRTOS 调度器源码剖析：从 PendSV 到上下文切换</title>
+  <link>https://example.com/#/article/freertos-scheduler</link>
+  <guid>https://example.com/#/article/freertos-scheduler</guid>
+  <pubDate>Fri, 03 Jan 2025 00:00:00 GMT</pubDate>
+  <description>深入 FreeRTOS 的任务调度核心实现，从 SysTick 中断、就绪链表到 PendSV 异常中的上下文保存与恢复，逐行拆解调度器运行机制。</description>
+</item>
+<item>
+  <title>Linux 字符设备驱动开发：从 file_operations 到用户空间交互</title>
+  <link>https://example.com/#/article/linux-char-driver</link>
+  <guid>https://example.com/#/article/linux-char-driver</guid>
+  <pubDate>Sun, 22 Dec 2024 00:00:00 GMT</pubDate>
+  <description>以一个完整的 GPIO 字符设备驱动为例，详解 Linux 驱动框架中的 cdev 注册、设备号分配、ioctl 实现以及 /dev 节点的自动创建。</description>
+</item>
+<item>
+  <title>CAN 总线协议精讲：从电气层到应用层的完整链路</title>
+  <link>https://example.com/#/article/can-bus-protocol</link>
+  <guid>https://example.com/#/article/can-bus-protocol</guid>
+  <pubDate>Sun, 15 Dec 2024 00:00:00 GMT</pubDate>
+  <description>详细讲解 CAN 2.0A/B 帧结构、位填充机制、错误处理与仲裁原理，结合 STM32 bxCAN 外设的配置实战。</description>
+</item>
+<item>
+  <title>Cortex-M HardFault 调试实战：从寄存器现场恢复调用栈</title>
+  <link>https://example.com/#/article/cortex-m-hardfault</link>
+  <guid>https://example.com/#/article/cortex-m-hardfault</guid>
+  <pubDate>Fri, 15 Nov 2024 00:00:00 GMT</pubDate>
+  <description>遇到 HardFault 不要慌。通过 SCB 寄存器判断故障类型，利用栈帧中保存的 LR/PC 定位崩溃点，配合 addr2line 精准溯源。</description>
+</item>
+<item>
+  <title>SPI + DMA 高速数据传输优化：突破吞吐量瓶颈</title>
+  <link>https://example.com/#/article/spi-dma-optimization</link>
+  <guid>https://example.com/#/article/spi-dma-optimization</guid>
+  <pubDate>Mon, 28 Oct 2024 00:00:00 GMT</pubDate>
+  <description>当 CPU 轮询搬运 SPI 数据成为瓶颈时，DMA 是终极武器。从 DMA 通道配置、双缓冲 Ping-Pong 模式到 Cache 一致性问题全面解析。</description>
+</item>
+</channel>
+</rss>
