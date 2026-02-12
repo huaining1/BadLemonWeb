@@ -1,7 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ALL_CATEGORY, type Post, type Page } from "@/types";
 import { ArticleCard } from "@/components/home/ArticleCard";
 import { Sidebar } from "@/components/home/Sidebar";
+
+const RECENT_POSTS_KEY = "bad-lemon.recentPosts";
 
 interface HomePageProps {
   posts: Post[];
@@ -11,6 +13,7 @@ interface HomePageProps {
 export function HomePage({ posts, onNavigate }: HomePageProps) {
   const [activeCategory, setActiveCategory] = useState(ALL_CATEGORY);
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [recentPostIds, setRecentPostIds] = useState<string[]>([]);
 
   // Compute categories and their counts
   const categories = useMemo(() => {
@@ -40,6 +43,21 @@ export function HomePage({ posts, onNavigate }: HomePageProps) {
 
   const featuredPosts = useMemo(() => filteredPosts.filter((p) => p.meta.featured), [filteredPosts]);
   const regularPosts = useMemo(() => filteredPosts.filter((p) => !p.meta.featured), [filteredPosts]);
+  const recentPosts = useMemo(
+    () => recentPostIds.map((id) => posts.find((post) => post.meta.id === id)).filter((post): post is Post => Boolean(post)),
+    [recentPostIds, posts]
+  );
+  const archiveGroups = useMemo(() => {
+    const grouped = new Map<string, Post[]>();
+    filteredPosts.forEach((post) => {
+      const monthKey = post.meta.date?.slice(0, 7) || "未知时间";
+      const list = grouped.get(monthKey) ?? [];
+      list.push(post);
+      grouped.set(monthKey, list);
+    });
+
+    return Array.from(grouped.entries()).sort((a, b) => b[0].localeCompare(a[0]));
+  }, [filteredPosts]);
 
   const categoryTabs = [ALL_CATEGORY, ...Array.from(categories.keys())];
 
@@ -51,6 +69,23 @@ export function HomePage({ posts, onNavigate }: HomePageProps) {
   const handleTagClick = (tag: string) => {
     setActiveTag(tag === activeTag ? null : tag);
   };
+
+  useEffect(() => {
+    const loadRecent = () => {
+      try {
+        const raw = window.localStorage.getItem(RECENT_POSTS_KEY);
+        const parsed = raw ? (JSON.parse(raw) as unknown) : [];
+        const ids = Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
+        setRecentPostIds(ids);
+      } catch {
+        setRecentPostIds([]);
+      }
+    };
+
+    loadRecent();
+    window.addEventListener("focus", loadRecent);
+    return () => window.removeEventListener("focus", loadRecent);
+  }, []);
 
   return (
     <section className="bg-surface-50 dark:bg-surface-950">
@@ -82,6 +117,28 @@ export function HomePage({ posts, onNavigate }: HomePageProps) {
                 );
               })}
             </div>
+
+            {recentPosts.length > 0 && (
+              <div className="mb-8 rounded-xl border border-surface-200 bg-white p-4 dark:border-surface-800 dark:bg-surface-900">
+                <h2 className="mb-3 text-sm font-semibold text-surface-900 dark:text-surface-0">
+                  最近阅读
+                </h2>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {recentPosts.slice(0, 4).map((post) => (
+                    <button
+                      key={post.meta.id}
+                      onClick={() => onNavigate("article", post.meta.id)}
+                      className="rounded-lg border border-surface-100 px-3 py-2 text-left transition-colors hover:border-brand-200 hover:bg-brand-50/40 dark:border-surface-800 dark:hover:border-brand-800 dark:hover:bg-brand-900/10"
+                    >
+                      <p className="truncate text-sm font-medium text-surface-800 dark:text-surface-100">
+                        {post.meta.title}
+                      </p>
+                      <p className="mt-1 text-xs text-surface-400 dark:text-surface-500">{post.meta.date}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Active tag indicator */}
             {activeTag && (
@@ -139,6 +196,33 @@ export function HomePage({ posts, onNavigate }: HomePageProps) {
                 </div>
               ) : null}
             </div>
+
+            {archiveGroups.length > 0 && (
+              <div className="mt-10 rounded-xl border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
+                <h2 className="mb-4 text-base font-semibold text-surface-900 dark:text-surface-0">
+                  归档时间线
+                </h2>
+                <div className="space-y-5">
+                  {archiveGroups.map(([month, monthPosts]) => (
+                    <div key={month}>
+                      <p className="mb-2 text-sm font-medium text-surface-700 dark:text-surface-200">{month}</p>
+                      <div className="space-y-1.5">
+                        {monthPosts.map((post) => (
+                          <button
+                            key={post.meta.id}
+                            onClick={() => onNavigate("article", post.meta.id)}
+                            className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm text-surface-600 transition-colors hover:bg-surface-50 hover:text-surface-900 dark:text-surface-300 dark:hover:bg-surface-800 dark:hover:text-surface-100"
+                          >
+                            <span className="truncate">{post.meta.title}</span>
+                            <span className="ml-2 shrink-0 text-xs text-surface-400 dark:text-surface-500">{post.meta.date}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* ===== Right column: sidebar ===== */}

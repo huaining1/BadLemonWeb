@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Header } from "@/components/layout/Header";
 import { Hero } from "@/components/layout/Hero";
 import { Footer } from "@/components/layout/Footer";
@@ -55,6 +55,10 @@ export function App() {
   const [currentPage, setCurrentPage] = useState<Page>(initialRoute.page);
   const [currentArticleId, setCurrentArticleId] = useState(initialRoute.articleId);
   const [searchOpen, setSearchOpen] = useState(false);
+  const currentArticle = useMemo(
+    () => allPosts.find((post) => post.meta.id === currentArticleId),
+    [currentArticleId]
+  );
 
   const { query, setQuery, results, reset } = useSearch(allPosts);
 
@@ -81,6 +85,25 @@ export function App() {
     window.addEventListener("hashchange", handleHashChange);
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, [applyRoute]);
+
+  useEffect(() => {
+    const siteName = "坏柠编程";
+    if (currentPage === "article") {
+      document.title = currentArticle
+        ? `${currentArticle.meta.title} | ${siteName}`
+        : `文章未找到 | ${siteName}`;
+      return;
+    }
+    if (currentPage === "articles") {
+      document.title = `文章列表 | ${siteName}`;
+      return;
+    }
+    if (currentPage === "about") {
+      document.title = `关于我 | ${siteName}`;
+      return;
+    }
+    document.title = `首页 | ${siteName}`;
+  }, [currentPage, currentArticle]);
 
   const navigate = useCallback((page: Page, articleId?: string) => {
     let nextRoute: AppRoute;

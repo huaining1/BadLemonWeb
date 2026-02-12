@@ -1,8 +1,10 @@
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect, useState, useRef } from "react";
 import type { Post, Page, TocItem } from "@/types";
 import { processHeadings } from "@/utils/markdown";
 import { CATEGORY_COLORS } from "@/types";
 import qrcodeImage from "@/assets/images/qrcode.jpg";
+
+const RECENT_POSTS_KEY = "bad-lemon.recentPosts";
 
 interface ArticlePageProps {
   posts: Post[];
@@ -12,6 +14,8 @@ interface ArticlePageProps {
 
 export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) {
   const post = useMemo(() => posts.find((p) => p.meta.id === articleId), [posts, articleId]);
+  const articleRef = useRef<HTMLElement | null>(null);
+  const copyToastTimerRef = useRef<number | null>(null);
 
   const { html, toc } = useMemo<{ html: string; toc: TocItem[] }>(() => {
     if (!post) return { html: "", toc: [] };
@@ -21,6 +25,8 @@ export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) 
   const [activeHeadingId, setActiveHeadingId] = useState("");
   const [commentPromptOpen, setCommentPromptOpen] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [readingProgress, setReadingProgress] = useState(0);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   // Scroll spy: highlight current heading by scroll position
   useEffect(() => {
@@ -82,6 +88,7 @@ export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) 
     window.scrollTo({ top: 0 });
     setCommentPromptOpen(false);
     setShowBackToTop(false);
+    setReadingProgress(0);
   }, [articleId]);
 
   useEffect(() => {
@@ -104,6 +111,95 @@ export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
+
+  useEffect(() => {
+    if (!post || typeof window === "undefined") return;
+
+    try {
+      const raw = window.localStorage.getItem(RECENT_POSTS_KEY);
+      const parsed = raw ? (JSON.parse(raw) as unknown) : [];
+      const ids = Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
+      const nextIds = [post.meta.id, ...ids.filter((id) => id !== post.meta.id)].slice(0, 8);
+      window.localStorage.setItem(RECENT_POSTS_KEY, JSON.stringify(nextIds));
+    } catch {
+      // Ignore malformed localStorage data
+    }
+  }, [post]);
+
+  useEffect(() => {
+    let rafId = 0;
+
+    const updateProgress = () => {
+      const articleElement = articleRef.current;
+      if (!articleElement) {
+        setReadingProgress(0);
+        return;
+      }
+
+      const start = articleElement.offsetTop - 120;
+      const end = articleElement.offsetTop + articleElement.scrollHeight - window.innerHeight;
+
+      if (end <= start) {
+        setReadingProgress(window.scrollY > start ? 100 : 0);
+        return;
+      }
+
+      const rawProgress = ((window.scrollY - start) / (end - start)) * 100;
+      const clamped = Math.min(100, Math.max(0, rawProgress));
+      setReadingProgress(clamped);
+    };
+
+    const requestUpdate = () => {
+      if (rafId) return;
+      rafId = window.requestAnimationFrame(() => {
+        rafId = 0;
+        updateProgress();
+      });
+    };
+
+    updateProgress();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    return () => {
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+      }
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+    };
+  }, [articleId, html]);
+
+  useEffect(() => {
+    return () => {
+      if (copyToastTimerRef.current) {
+        window.clearTimeout(copyToastTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleCopyLink = async () => {
+    const url = window.location.href;
+
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const input = document.createElement("input");
+      input.value = url;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      document.body.removeChild(input);
+    }
+
+    setLinkCopied(true);
+    if (copyToastTimerRef.current) {
+      window.clearTimeout(copyToastTimerRef.current);
+    }
+    copyToastTimerRef.current = window.setTimeout(() => {
+      setLinkCopied(false);
+      copyToastTimerRef.current = null;
+    }, 1800);
+  };
 
   if (!post) {
     return (
@@ -132,6 +228,13 @@ export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) 
 
   return (
     <div className="bg-surface-50 dark:bg-surface-950">
+      <div className="fixed left-0 right-0 top-16 z-[60] h-0.5">
+        <div
+          className="h-full bg-brand-400 transition-[width] duration-100"
+          style={{ width: `${readingProgress}%` }}
+        />
+      </div>
+
       {/* ===== Article header ===== */}
       <div className="border-b border-surface-200 bg-white dark:border-surface-800 dark:bg-surface-900">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
@@ -195,6 +298,18 @@ export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) 
               </span>
             ))}
           </div>
+
+          <div className="mt-4 flex items-center gap-2">
+            <button
+              onClick={handleCopyLink}
+              className="rounded-lg border border-surface-200 px-3 py-1.5 text-xs font-medium text-surface-600 transition-colors hover:bg-surface-100 dark:border-surface-700 dark:text-surface-300 dark:hover:bg-surface-800"
+            >
+              复制文章链接
+            </button>
+            {linkCopied && (
+              <span className="text-xs text-brand-600 dark:text-brand-400">链接已复制</span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -202,7 +317,7 @@ export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           {/* Main content */}
-          <article className="lg:col-span-8">
+          <article ref={articleRef} className="lg:col-span-8">
             <div className="rounded-xl border border-surface-200 bg-white p-6 shadow-sm sm:p-8 lg:p-10 dark:border-surface-800 dark:bg-surface-900">
               <div
                 className="article-content"
