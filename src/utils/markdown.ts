@@ -2,6 +2,11 @@ import { marked, type Tokens } from "marked";
 import type { Post, PostMeta, TocItem } from "@/types";
 import postsMeta from "virtual:posts-meta";
 
+interface PostFileTimeMeta {
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 function escapeHtmlAttr(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -76,6 +81,12 @@ function formatDateFromIso(iso: string | undefined): string {
   return `${y}-${m}-${d}`;
 }
 
+function normalizeDateInput(value: string | undefined): string {
+  if (!value) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  return formatDateFromIso(value);
+}
+
 function markdownToPlainText(markdown: string): string {
   return markdown
     .replace(/```[\s\S]*?```/g, " ")
@@ -138,7 +149,12 @@ export function loadAllPosts(): Post[] {
     const { data, body } = parseFrontmatter(rawStr);
     const filename = filepath.split("/").pop()?.replace(".md", "") || "";
     const id = (data.id as string) || filename;
-    const generatedDate = formatDateFromIso(postsMeta[filepath]);
+    const fileTimeMeta = (postsMeta[filepath] as PostFileTimeMeta | undefined) ?? {};
+    const frontmatterDate = normalizeDateInput(data.date as string | undefined);
+    const createdDate = formatDateFromIso(fileTimeMeta.createdAt);
+    const updatedDate = formatDateFromIso(fileTimeMeta.updatedAt);
+    const publishDate = frontmatterDate || createdDate || updatedDate;
+    const lastUpdatedDate = updatedDate || publishDate;
     const generatedDescription = generateDescriptionFromBody(body, 50);
 
     const htmlRaw = marked.parse(body, {
@@ -151,8 +167,8 @@ export function loadAllPosts(): Post[] {
     const meta: PostMeta = {
       id,
       title: (data.title as string) || filename,
-      date: generatedDate || (data.date as string) || "",
-      updatedAt: generatedDate || (data.date as string) || "",
+      date: publishDate,
+      updatedAt: lastUpdatedDate,
       category: (data.category as string) || "未分类",
       tags: Array.isArray(data.tags) ? (data.tags as string[]) : [],
       description: generatedDescription || (data.description as string) || "",

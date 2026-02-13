@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs";
+import { spawnSync } from "child_process";
 import { fileURLToPath } from "url";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
@@ -13,9 +14,53 @@ const POSTS_META_MODULE = "virtual:posts-meta";
 const RESOLVED_POSTS_META_MODULE = "\0virtual:posts-meta";
 const SITE_URL = (process.env.SITE_URL || "https://example.com").replace(/\/+$/, "");
 
+interface FileTimeMeta {
+  createdAt: string;
+  updatedAt: string;
+}
+
 function isPostsMarkdownFile(file: string): boolean {
   const normalized = file.replace(/\\/g, "/");
   return normalized.includes("/src/content/posts/") && normalized.endsWith(".md");
+}
+
+function readGitTimestamp(args: string[], pick: "first" | "last"): string {
+  const result = spawnSync("git", args, {
+    cwd: __dirname,
+    encoding: "utf-8",
+  });
+
+  if (result.status !== 0 || !result.stdout) return "";
+
+  const lines = result.stdout
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (lines.length === 0) return "";
+  return pick === "first" ? lines[0] : lines[lines.length - 1];
+}
+
+function resolveFileTimeMeta(absolutePath: string): FileTimeMeta {
+  const stat = fs.statSync(absolutePath);
+  const relativePath = path.relative(__dirname, absolutePath).replace(/\\/g, "/");
+
+  // Last commit time for this file (update time).
+  const gitUpdatedAt = readGitTimestamp(
+    ["log", "-1", "--format=%aI", "--", relativePath],
+    "first"
+  );
+
+  // First commit time for this file (publish fallback).
+  const gitCreatedAt = readGitTimestamp(
+    ["log", "--diff-filter=A", "--follow", "--format=%aI", "--", relativePath],
+    "last"
+  );
+
+  const updatedAt = gitUpdatedAt || stat.mtime.toISOString();
+  const createdAt = gitCreatedAt || updatedAt;
+
+  return { createdAt, updatedAt };
 }
 
 function postsMetaPlugin(): Plugin {
@@ -47,7 +92,7 @@ function postsMetaPlugin(): Plugin {
       if (id !== RESOLVED_POSTS_META_MODULE) return null;
 
       const postsDir = path.resolve(__dirname, "src/content/posts");
-      const postsMeta: Record<string, string> = {};
+      const postsMeta: Record<string, FileTimeMeta> = {};
 
       if (fs.existsSync(postsDir)) {
         const files = fs
@@ -57,8 +102,7 @@ function postsMetaPlugin(): Plugin {
 
         for (const file of files) {
           const absolutePath = path.join(postsDir, file);
-          const stat = fs.statSync(absolutePath);
-          postsMeta[`/src/content/posts/${file}`] = stat.mtime.toISOString();
+          postsMeta[`/src/content/posts/${file}`] = resolveFileTimeMeta(absolutePath);
         }
       }
 
@@ -122,14 +166,17 @@ function rssFeedPlugin(): Plugin {
       const posts = files.map((file) => {
         const absolutePath = path.join(postsDir, file);
         const raw = fs.readFileSync(absolutePath, "utf-8");
-        const stat = fs.statSync(absolutePath);
+        const timeMeta = resolveFileTimeMeta(absolutePath);
         const { data, body } = parseFrontmatter(raw);
         const id = data.id || file.replace(/\.md$/i, "");
         const title = data.title || id;
         const descriptionRaw = data.description || markdownToPlainText(body).slice(0, 140);
-        const date = data.date || stat.mtime.toISOString().slice(0, 10);
+        const date = data.date || timeMeta.createdAt.slice(0, 10);
         const dateObj = new Date(date);
-        const timestamp = Number.isNaN(dateObj.getTime()) ? stat.mtime.getTime() : dateObj.getTime();
+        const createdAtMs = new Date(timeMeta.createdAt).getTime();
+        const timestamp = Number.isNaN(dateObj.getTime())
+          ? (Number.isNaN(createdAtMs) ? Date.now() : createdAtMs)
+          : dateObj.getTime();
         const pubDate = new Date(timestamp).toUTCString();
         const url = `${SITE_URL}/#/article/${encodeURIComponent(id)}`;
 
