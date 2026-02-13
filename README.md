@@ -49,13 +49,14 @@ npm run build
 
 可将该地址添加到 RSS 阅读器（Inoreader / Feedly / Follow）。
 
-## GitHub Pages 部署（手动 gh-pages）
+## GitHub Pages 自动部署（GitHub Actions）
 
 本项目采用：
 
 - 源码分支：`master`
 - 发布分支：`gh-pages`
 - 站点地址：`https://huaining1.github.io/BadLemonWeb/`
+- 自动发布工作流：`.github/workflows/deploy-gh-pages.yml`
 
 ### 1) 创建 GitHub 仓库
 
@@ -74,62 +75,37 @@ git remote add github https://github.com/huaining1/BadLemonWeb.git
 git remote -v
 ```
 
-### 3) 推送源码到 GitHub master
+### 3) 推送源码到 GitHub master（触发自动发布）
 
 ```bash
 git push github master
 ```
 
-### 4) 生产构建（写入正确 SITE_URL）
-
-PowerShell：
-
-```bash
-$env:SITE_URL="https://huaining1.github.io/BadLemonWeb"
-npm run build
-```
-
-校验 `dist/rss.xml` 内应包含：
-
-- `<link>https://huaining1.github.io/BadLemonWeb</link>`
-- `<atom:link href="https://huaining1.github.io/BadLemonWeb/rss.xml" ... />`
-
-### 5) 发布 dist 到 gh-pages 分支（临时目录法）
-
-PowerShell 示例：
-
-```powershell
-$tempDir = Join-Path $env:TEMP "bedlemon_gh_pages"
-if (Test-Path $tempDir) { Remove-Item -Recurse -Force $tempDir }
-New-Item -ItemType Directory -Path $tempDir | Out-Null
-Copy-Item -Path ".\\dist\\*" -Destination $tempDir -Recurse -Force
-
-Set-Location $tempDir
-git init -b gh-pages
-git config user.name "bad-lemon-bot"
-git config user.email "bad-lemon@example.com"
-New-Item -ItemType File -Path ".nojekyll" -Force | Out-Null
-git add .
-git commit -m "deploy: publish static site"
-git remote add github https://github.com/huaining1/BadLemonWeb.git
-git push -f github gh-pages
-```
-
-### 6) GitHub Pages 开启
+### 4) GitHub 仓库一次性设置
 
 GitHub 仓库中：
 
-1. `Settings`
-2. `Pages`
-3. `Source` 选择 `Deploy from a branch`
-4. Branch 选择 `gh-pages` + `/ (root)`
-5. 保存并等待 1-5 分钟
+1. `Settings -> Actions -> General -> Workflow permissions`
+2. 选择 `Read and write permissions`
+3. `Settings -> Pages`
+4. `Source` 选择 `Deploy from a branch`
+5. Branch 选择 `gh-pages` + `/ (root)`
+6. 保存并等待 1-5 分钟
 
 部署后访问：
 
 - 首页：`https://huaining1.github.io/BadLemonWeb/`
 - 标签页：`https://huaining1.github.io/BadLemonWeb/#/tags`
 - RSS：`https://huaining1.github.io/BadLemonWeb/rss.xml`
+
+### 5) 后续更新流程（新增文章）
+
+1. 在 `src/content/posts/` 新增或修改 `.md` 文章
+2. 提交并推送到 GitHub `master`
+3. GitHub Actions 自动构建并覆盖 `gh-pages`
+4. 等待 1-3 分钟后线上自动更新
+
+也可以在 GitHub 的 `Actions` 页面手动点击 `Run workflow` 触发发布。
 
 ## 页面路由
 
