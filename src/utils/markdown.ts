@@ -96,6 +96,12 @@ function generateDescriptionFromBody(markdown: string, maxLength = 50): string {
   return `${plain.slice(0, maxLength)}...`;
 }
 
+function wrapTables(html: string): string {
+  return html
+    .replace(/<table>/g, '<div class="table-wrap"><table>')
+    .replace(/<\/table>/g, "</table></div>");
+}
+
 /**
  * 从渲染后的 HTML 中提取 h2/h3 标题，加入 id 属性用于目录跳转
  */
@@ -135,13 +141,18 @@ export function loadAllPosts(): Post[] {
     const generatedDate = formatDateFromIso(postsMeta[filepath]);
     const generatedDescription = generateDescriptionFromBody(body, 50);
 
-    const htmlRaw = marked.parse(body, { async: false, renderer: markdownRenderer }) as string;
-    const { html } = processHeadings(htmlRaw);
+    const htmlRaw = marked.parse(body, {
+      async: false,
+      renderer: markdownRenderer,
+      gfm: true,
+    }) as string;
+    const { html } = processHeadings(wrapTables(htmlRaw));
 
     const meta: PostMeta = {
       id,
       title: (data.title as string) || filename,
       date: generatedDate || (data.date as string) || "",
+      updatedAt: generatedDate || (data.date as string) || "",
       category: (data.category as string) || "未分类",
       tags: Array.isArray(data.tags) ? (data.tags as string[]) : [],
       description: generatedDescription || (data.description as string) || "",

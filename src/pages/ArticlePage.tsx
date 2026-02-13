@@ -3,6 +3,7 @@ import type { Post, Page, TocItem } from "@/types";
 import { processHeadings } from "@/utils/markdown";
 import { CATEGORY_COLORS } from "@/types";
 import qrcodeImage from "@/assets/images/qrcode.jpg";
+import avatarImage from "@/assets/images/avatar.jpg";
 
 const RECENT_POSTS_KEY = "bad-lemon.recentPosts";
 
@@ -367,9 +368,11 @@ export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) 
           {/* Meta info */}
           <div className="flex flex-wrap items-center gap-4 text-sm text-surface-400 dark:text-surface-500">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-100 text-sm dark:bg-surface-800">
-                🍋
-              </div>
+              <img
+                src={avatarImage}
+                alt="avatar"
+                className="h-7 w-7 rounded-full object-cover ring-1 ring-surface-200 dark:ring-surface-700"
+              />
               <span className="font-medium text-surface-700 dark:text-surface-300">坏柠</span>
             </div>
             <span className="flex items-center gap-1">
@@ -443,9 +446,11 @@ export function ArticlePage({ posts, articleId, onNavigate }: ArticlePageProps) 
 
             {/* Author box */}
             <div className="mt-6 flex items-center gap-4 rounded-xl border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-surface-100 text-2xl dark:bg-surface-800">
-                🍋
-              </div>
+              <img
+                src={avatarImage}
+                alt="avatar"
+                className="h-14 w-14 shrink-0 rounded-xl object-cover ring-1 ring-surface-200 dark:ring-surface-700"
+              />
               <div>
                 <h4 className="font-semibold text-surface-900 dark:text-surface-0">坏柠</h4>
                 <p className="text-sm text-surface-500 dark:text-surface-400">

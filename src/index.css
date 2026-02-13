@@ -257,6 +257,93 @@ body {
   margin: 1.5rem 0;
 }
 
+.article-content .table-wrap {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.dark .article-content .table-wrap {
+  border-color: #333;
+  background: #141414;
+}
+
+.article-content table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.article-content thead {
+  background: #f5f5f5;
+}
+
+.dark .article-content thead {
+  background: #1f1f1f;
+}
+
+.article-content th,
+.article-content td {
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1px solid #e5e5e5;
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.6;
+  color: #404040;
+}
+
+.article-content th {
+  font-weight: 600;
+  color: #171717;
+  white-space: nowrap;
+}
+
+.dark .article-content th,
+.dark .article-content td {
+  border-bottom-color: #333;
+  color: #b0b0b0;
+}
+
+.dark .article-content th {
+  color: #f5f5f5;
+}
+
+.article-content tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+
+.dark .article-content tbody tr:nth-child(even) {
+  background: #161616;
+}
+
+.article-content tbody tr:hover {
+  background: #f3f4f6;
+}
+
+.dark .article-content tbody tr:hover {
+  background: #202020;
+}
+
+.article-content tbody tr:last-child td {
+  border-bottom: none;
+}
+
+@media (max-width: 640px) {
+  .article-content table {
+    min-width: 520px;
+    font-size: 0.875rem;
+  }
+
+  .article-content th,
+  .article-content td {
+    padding: 0.625rem 0.75rem;
+  }
+}
+
 /* Dot grid pattern */
 .dot-pattern {
   background-image: radial-gradient(circle, rgba(212, 198, 46, 0.12) 1px, transparent 1px);

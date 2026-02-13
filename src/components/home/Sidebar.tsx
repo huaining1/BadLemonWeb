@@ -1,5 +1,6 @@
 import { CATEGORY_COLORS } from "@/types";
 import qrcodeImage from "@/assets/images/qrcode.jpg";
+import avatarImage from "@/assets/images/avatar.jpg";
 
 interface SidebarProps {
   categories: Map<string, number>;
@@ -30,8 +31,8 @@ export function Sidebar({
     <div className="sticky top-20 space-y-5">
       {/* Author card */}
       <div className="rounded-xl border border-surface-200 bg-white p-5 dark:border-surface-800 dark:bg-surface-900">
-        <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-xl bg-surface-900 text-2xl shadow-md dark:bg-surface-800">
-          🍋
+        <div className="mb-3 h-16 w-16 overflow-hidden rounded-xl shadow-md ring-1 ring-surface-200 dark:ring-surface-700">
+          <img src={avatarImage} alt="avatar" className="h-full w-full object-cover" />
         </div>
         <h3 className="text-base font-bold text-surface-900 dark:text-surface-0">坏柠</h3>
         <p className="mb-3 text-sm text-surface-500 dark:text-surface-400">嵌入式软件工程师</p>

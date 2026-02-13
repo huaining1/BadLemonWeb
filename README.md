@@ -100,12 +100,35 @@ GitHub 仓库中：
 
 ### 5) 后续更新流程（新增文章）
 
+每次新增文章后，按下面流程即可自动更新线上网页：
+
 1. 在 `src/content/posts/` 新增或修改 `.md` 文章
-2. 提交并推送到 GitHub `master`
-3. GitHub Actions 自动构建并覆盖 `gh-pages`
-4. 等待 1-3 分钟后线上自动更新
+2. 本地预览确认内容正常：
+```bash
+npm run dev
+```
+3. 提交代码：
+```bash
+git add .
+git commit -m "feat: add new post"
+```
+4. 推送到 GitHub `master`（会自动触发部署）：
+```bash
+git push github master
+```
+5. 打开 GitHub 仓库 `Actions` 页面，确认 `Deploy to GitHub Pages` 成功
+6. 等待 1-3 分钟后访问线上：
+   - 首页：`https://huaining1.github.io/BadLemonWeb/`
+   - 文章页：`https://huaining1.github.io/BadLemonWeb/#/article/<文章ID>`
+   - RSS：`https://huaining1.github.io/BadLemonWeb/rss.xml`
 
 也可以在 GitHub 的 `Actions` 页面手动点击 `Run workflow` 触发发布。
+
+如果线上没更新，优先检查：
+
+1. `master` 是否推送到 GitHub（不是只推送到 Gitee）
+2. `Actions` 工作流是否失败
+3. `Settings -> Pages` 是否仍指向 `gh-pages` / `(root)`
 
 ## 页面路由
 
@@ -156,3 +179,10 @@ void main(void) {
 }
 ```
 ````
+
+新增文章建议：
+
+1. 文件名就是文章 ID，会用于 URL（如：`#/article/my-new-article`）
+2. `title`、`date`、`category`、`tags`、`description` 建议完整填写
+3. `date` 建议使用 `YYYY-MM-DD`，便于排序和归档
+4. 写完后至少本地 `npm run dev` 检查一次，再提交推送

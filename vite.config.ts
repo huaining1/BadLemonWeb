@@ -3,7 +3,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, type Plugin, type ViteDevServer } from "vite";
 import { viteSingleFile } from "vite-plugin-singlefile";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,9 +13,32 @@ const POSTS_META_MODULE = "virtual:posts-meta";
 const RESOLVED_POSTS_META_MODULE = "\0virtual:posts-meta";
 const SITE_URL = (process.env.SITE_URL || "https://example.com").replace(/\/+$/, "");
 
+function isPostsMarkdownFile(file: string): boolean {
+  const normalized = file.replace(/\\/g, "/");
+  return normalized.includes("/src/content/posts/") && normalized.endsWith(".md");
+}
+
 function postsMetaPlugin(): Plugin {
+  function invalidatePostsMetaModule(server: ViteDevServer): void {
+    const module = server.moduleGraph.getModuleById(RESOLVED_POSTS_META_MODULE);
+    if (module) {
+      server.moduleGraph.invalidateModule(module);
+    }
+  }
+
+  function refreshPostsMeta(server: ViteDevServer, file: string): void {
+    if (!isPostsMarkdownFile(file)) return;
+    invalidatePostsMetaModule(server);
+    server.ws.send({ type: "full-reload" });
+  }
+
   return {
     name: "posts-meta-plugin",
+    configureServer(server) {
+      server.watcher.on("add", (file) => refreshPostsMeta(server, file));
+      server.watcher.on("change", (file) => refreshPostsMeta(server, file));
+      server.watcher.on("unlink", (file) => refreshPostsMeta(server, file));
+    },
     resolveId(id: string) {
       if (id === POSTS_META_MODULE) return RESOLVED_POSTS_META_MODULE;
       return null;

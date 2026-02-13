@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import type { Page } from "@/types";
+import avatarImage from "@/assets/images/avatar.jpg";
 
 interface HeaderProps {
   darkMode: boolean;
@@ -44,13 +45,11 @@ export function Header({
             onClick={() => onNavigate("home")}
             className="group flex items-center gap-2.5 transition-opacity hover:opacity-80"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-900 dark:bg-surface-0">
-              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none">
-                <circle cx="12" cy="10" r="6" stroke="#D4C62E" strokeWidth="2" />
-                <path d="M12 4 C12 2 14 1 14 1" stroke="#6B8E23" strokeWidth="1.5" strokeLinecap="round" />
-                <ellipse cx="14" cy="3" rx="2.5" ry="1.5" fill="#6B8E23" transform="rotate(-30 14 3)" opacity="0.8" />
-              </svg>
-            </div>
+            <img
+              src={avatarImage}
+              alt="avatar"
+              className="h-9 w-9 rounded-lg object-cover ring-1 ring-surface-200 dark:ring-surface-700"
+            />
             <div className="flex items-baseline gap-0.5">
               <span className="text-lg font-bold tracking-tight text-surface-900 dark:text-surface-0">坏柠</span>
               <span className="text-lg font-light tracking-tight text-surface-500 dark:text-surface-300">编程</span>
