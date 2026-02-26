@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>坏柠编程</title>
+  <link>https://huaining1.github.io/BadLemonWeb</link>
+  <description>嵌入式技术分享博客，持续更新底层实战内容。</description>
+  <language>zh-CN</language>
+  <atom:link href="https://huaining1.github.io/BadLemonWeb/rss.xml" rel="self" type="application/rss+xml" />
+<item>
+  <title>跑通 Hello World 之后，我是怎么第一次真正用上 ESP32 的 menuconfig 和日志系统的</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/02_esp32s3</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/02_esp32s3</guid>
+  <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
+  <description>跑通 Hello World 之后，我是怎么第一次真正用上 ESP32 的 menuconfig 和日志系统的 hello world 跑通那天，我其实挺开心的。 程序能烧进去，串口能正常打印，一切看起来都很顺利。 但也正是在这一步之后，我开始意识到一个问题： 串口里的信息，好像</description>
+</item>
+<item>
+  <title>从点亮一颗 LED 开始：ESP32-S3 GPIO 输出的正确学习方式</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/03_esp32s3</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/03_esp32s3</guid>
+  <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
+  <description>从点亮一颗 LED 开始：ESP32 S3 GPIO 输出的正确学习方式 在嵌入式开发中， GPIO 永远是第一个绕不开的外设 。 但很多人学 GPIO，往往一上来就搜“ESP32 GPIO 点灯代码”，复制、烧录、亮了就结束了。 这样的问题在于： 代码能跑，但你并不知道它为什么</description>
+</item>
+<item>
+  <title>任务看门狗（Task Watchdog）——ESP32 为什么这么“容易重启”？</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/04_esp32s3</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/04_esp32s3</guid>
+  <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
+  <description>任务看门狗（Task Watchdog）——ESP32 为什么这么“容易重启”？ 在传统 MCU 学习中，看门狗往往是靠后才会讲的内容，甚至很多项目里是“能关就关”。 但在 ESP32（尤其是基于 ESP IDF 的工程）中，看门狗反而是一个 绕不开的前置概念 。 原因只有一个：</description>
+</item>
+<item>
+  <title>GPIO 输入到按键中断：我在 ESP32-S3 上把「输入」这件事想明白的过程</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/05_esp32s3</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/05_esp32s3</guid>
+  <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
+  <description>GPIO 输入到按键中断：我在 ESP32 S3 上把「输入」这件事想明白的过程 在真正写 ESP32 S3 项目之前，我对 GPIO 输入的理解其实非常浅： 能读电平就行 。 但当我把按键真正接进系统之后才发现，GPIO 输入并不是一个“API 会用就结束”的点，而是会直接影响</description>
+</item>
+<item>
+  <title>从任务到队列：我在 ESP32-S3 上理解 FreeRTOS 的一次完整实践</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/06_esp32s3</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/06_esp32s3</guid>
+  <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
+  <description>从任务到队列：我在 ESP32 S3 上理解 FreeRTOS 的一次完整实践 这篇文章不是一份 FreeRTOS API 手册，而是我在 ESP32 S3 实际开发过程中， 从“先把程序跑起来”，到“开始关心系统结构是否合理” 的一次完整记录。 一、为什么我一开始并不关心 Fr</description>
+</item>
+<item>
+  <title>ESP32-S3 定时器详解：esp_timer 与 GPTimer 的工程级选择</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/07_esp32s3</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/07_esp32s3</guid>
+  <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
+  <description>ESP32 S3 定时器详解：esp timer 与 GPTimer 的工程级选择 在真正开始写业务代码之前，我花了不少时间卡在 ESP32 S3 的“时间”问题上。 最开始只是想 每隔一段时间打印一次日志 ，后来却逐渐意识到： 在 ESP32 S3 上，定时器看起来简单，但如果</description>
+</item>
+<item>
+  <title>ESP32-S3 的 PWM，我是怎么真正用明白的</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/08_esp32s3</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/08_esp32s3</guid>
+  <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
+  <description>ESP32 S3 的 PWM，我是怎么真正用明白的 在刚接触 ESP32 S3 的时候，我对 PWM 这件事其实并不陌生。 LED 调光、电机调速、蜂鸣器发声——在单片机世界里， PWM 是绕不开的基础能力 。理论上也不复杂： 通过调节一个周期内高电平所占的比例，就可以“模拟”出</description>
+</item>
+<item>
+  <title>ESP32-S3 的 I²C：从“能连设备”到“工程上用得顺”</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/09_esp32s3</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/09_esp32s3</guid>
+  <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
+  <description>ESP32 S3 的 I²C：从“能连设备”到“工程上用得顺” 在刚开始接触 ESP32 S3 的时候，我对 I²C 的理解其实非常简单： 两根线，能连传感器，能点亮 OLED。 但真正开始做多外设、多任务的项目后，我才意识到： I²C 并不是一个“接口”，而是一条“共享总线资源</description>
+</item>
+<item>
+  <title>ESP32‑S3 串口：从“能打印日志”到真正用在业务里</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/10_esp32s3</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/10_esp32s3</guid>
+  <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
+  <description>ESP32‑S3 串口：从“能打印日志”到真正用在业务里 刚开始用 ESP32‑S3 的时候，我对串口的理解其实非常“初级”—— 能连上串口助手、能看到启动日志，就算会用了。 但真正开始写业务代码、接外设、跑 FreeRTOS 任务之后，我才发现： UART 这东西，看起来简单，</description>
+</item>
+<item>
+  <title>为什么我一开始把 ESP32-S3 的 SPI 用得一塌糊涂</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/11_esp32s3</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/11_esp32s3</guid>
+  <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
+  <description>一、为什么我一开始把 ESP32 S3 的 SPI 用得一塌糊涂 刚接触 ESP32 S3 的时候，我对 SPI 的理解非常“朴素”： SPI 就是： 选个 SPI 口 → 接 MOSI / MISO / CLK / CS → 发数据 直到后来我同时接了 SPI Flash、PS</description>
+</item>
+<item>
+  <title>ESP32-S3 ADC 我是这样真正用顺的：从 SAR ADC 原理到一次完整的电压采集实战</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/12_esp32s3</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/12_esp32s3</guid>
+  <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
+  <description>ESP32 S3 ADC 我是这样真正用顺的：从 SAR ADC 原理到一次完整的电压采集实战 ESP32 S3 集成了 两个 12 位 SAR ADC ，共支持 20 个模拟通道输入 ，在实际项目中非常适合用来采集： 电位器 传感器模拟输出 电压检测点 但在真正上手之前，有一个</description>
+</item>
+<item>
+  <title>ESP32 的 NVS，我是踩过坑之后才真正搞懂的</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/13_esp32s3</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/13_esp32s3</guid>
+  <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
+  <description>ESP32 的 NVS，我是踩过坑之后才真正搞懂的 一开始接触 NVS（Non Volatile Storage）的时候，我对它的理解非常简单： “不就是往 Flash 里存点数据吗？” 结果在真实项目里用起来之后才发现， NVS 并不是一个“随便存、随便读”的东西 ， 而是一个</description>
+</item>
+<item>
+  <title>ESP32-S3 部署 MimicLaw 完整教程：从零到成功调用 DeepSeek</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/17_esp32s3_mimiclaw</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/17_esp32s3_mimiclaw</guid>
+  <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
+  <description>ESP32 S3 部署 MimicLaw 完整教程：从零到成功调用 DeepSeek 一块 30 块钱的开发板 + 一个大模型 API，就能做出可以听懂人话的智能硬件。 最近我成功将开源项目 MimicLaw 部署到了 ESP32 S3 核心板上，并接入 DeepSeek API</description>
+</item>
+<item>
+  <title>作为一个刚入门的时候，我是如何入门 ESP32-S3 的</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/01_esp32s3</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/01_esp32s3</guid>
+  <pubDate>Mon, 26 Jan 2026 00:00:00 GMT</pubDate>
+  <description>作为一个刚入门的时候，我是如何入门 ESP32-S3 的</description>
+</item>
+<item>
+  <title>没有屏幕没有键盘，ESP32-S3 怎么连上我家 Wi-Fi？SmartConfig 配网实战</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/16_esp32s3_wifi</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/16_esp32s3_wifi</guid>
+  <pubDate>Sun, 25 Jan 2026 00:00:00 GMT</pubDate>
+  <description>没有屏幕没有键盘，ESP32 S3 怎么连上我家 Wi Fi？SmartConfig 配网实战 前言：一个看似简单却让我卡住的问题 学 ESP32 S3 学到 Wi Fi 这一章，我满脑子想的都是赶紧联网、搞个物联网设备出来。然后我就愣住了—— 我家路由器的账号密码，怎么告诉这块</description>
+</item>
+<item>
+  <title>学习笔记：搞懂分区表，才算真正掌握 Flash 的使用</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/15_esp32s3_fqb</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/15_esp32s3_fqb</guid>
+  <pubDate>Sat, 24 Jan 2026 00:00:00 GMT</pubDate>
+  <description>ESP32 S3 学习笔记：搞懂分区表，才算真正掌握 Flash 的使用 前言：一个困扰我很久的问题 在前面学习 NVS 的时候，我知道了数据是存在 Flash 里的。但有个问题一直萦绕在我脑海里—— 数据到底存在 Flash 的哪个位置？ Flash 就像一块空地，NVS 占一</description>
+</item>
+<item>
+  <title>ESP32-S3 上居然能像电脑一样读写文件？SPIFFS 文件系统实战</title>
+  <link>https://huaining1.github.io/BadLemonWeb/#/article/14_esp32s3</link>
+  <guid>https://huaining1.github.io/BadLemonWeb/#/article/14_esp32s3</guid>
+  <pubDate>Fri, 23 Jan 2026 00:00:00 GMT</pubDate>
+  <description>ESP32 S3 上居然能像电脑一样读写文件？SPIFFS 文件系统实战 前言：NVS 够用了，为什么还需要文件系统？ 前面学完 NVS，我一度觉得存储问题已经彻底解决了——键值对嘛，想存什么存什么。 直到有一天我想存一段比较长的 HTML 网页内容，还想存一张小图片，突然发现 </description>
+</item>
+</channel>
+</rss>
