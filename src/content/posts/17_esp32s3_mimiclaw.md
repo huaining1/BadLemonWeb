@@ -1,8 +1,9 @@
 ---
 title: "ESP32-S3 部署 MimicLaw 完整教程：从零到成功调用 DeepSeek"
+date: "2026-02-26"
 category: "ESP32"
 tags: [ESP32, 通信协议,ESP-IDF]
-featured: false
+featured: true
 ---
 
 # ESP32-S3 部署 MimicLaw 完整教程：从零到成功调用 DeepSeek

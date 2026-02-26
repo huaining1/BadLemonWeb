@@ -1,6 +1,7 @@
 ---
 title: "学习笔记：搞懂分区表，才算真正掌握 Flash 的使用"
 category: "ESP32"
+date: "2026-01-24"
 tags: [ESP32, 通信协议,ESP-IDF]
 featured: false
 ---

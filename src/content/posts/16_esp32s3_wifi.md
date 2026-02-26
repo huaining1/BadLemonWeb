@@ -1,6 +1,7 @@
 ---
 title: "没有屏幕没有键盘，ESP32-S3 怎么连上我家 Wi-Fi？SmartConfig 配网实战"
 category: "ESP32"
+date: "2026-01-25"
 tags: [ESP32, 通信协议,ESP-IDF]
 featured: false
 ---
