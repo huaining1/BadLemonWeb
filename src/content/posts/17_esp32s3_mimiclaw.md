@@ -1,3 +1,10 @@
+---
+title: "ESP32-S3 部署 MimicLaw 完整教程：从零到成功调用 DeepSeek"
+category: "ESP32"
+tags: [ESP32, 通信协议,ESP-IDF]
+featured: false
+---
+
 # ESP32-S3 部署 MimicLaw 完整教程：从零到成功调用 DeepSeek
 
 **一块 30 块钱的开发板 + 一个大模型 API，就能做出可以听懂人话的智能硬件。**

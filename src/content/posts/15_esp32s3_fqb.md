@@ -1,5 +1,9 @@
-
-
+---
+title: "学习笔记：搞懂分区表，才算真正掌握 Flash 的使用"
+category: "ESP32"
+tags: [ESP32, 通信协议,ESP-IDF]
+featured: false
+---
 # ESP32-S3 学习笔记：搞懂分区表，才算真正掌握 Flash 的使用
 
 ## 前言：一个困扰我很久的问题
